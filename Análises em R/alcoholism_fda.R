@@ -7,34 +7,46 @@ alcoholism_train = read.csv("Alcoholism_train.csv", sep = ',')
 alcoholism_test = read.csv("Alcoholism_test.csv", sep = ',')
 
 
-s2_match_train <- alcoholism_train %>% filter(matching.condition=="S2 match") %>% dplyr::select(subject.identifier, time, sensor.value, channel)
-s2_match_test <- alcoholism_test %>% filter(matching.condition=="S2 match") %>% dplyr::select(subject.identifier, time, sensor.value, channel)
+s2_match_train <- alcoholism_train %>% filter(matching.condition=="S1 obj")
+s2_match_test <- alcoholism_test %>% filter(matching.condition=="S1 obj") 
 
 
-s2_match_train$sensor.value <- as.numeric(s2_match_train$sensor.value)
-s2_match_train$channel <- as.numeric(s2_match_train$time)
+#s2_match_train <- alcoholism_train %>% filter(matching.condition=="S1 obj") %>% filter(channel %in% c(1, 63)) %>% dplyr::select(subject.identifier, sensor.value, channel)
+#s2_match_test <- alcoholism_test %>% filter(matching.condition=="S1 obj") %>% filter(channel %in% c(1, 63)) %>% dplyr::select(subject.identifier, sensor.value, channel)
 
-s2_match_test$sensor.value <- as.numeric(s2_match_test$sensor.value)
-s2_match_test$channel <- as.numeric(s2_match_test$time)
+
+
+X1_train <- s2_match_train %>% filter(channel==1) %>% dplyr::select(sensor.value)
+X2_train <- s2_match_train %>% filter(channel==63) %>% dplyr::select(sensor.value)
+
+
+
+#s2_match_train$sensor.value <- as.numeric(s2_match_train$sensor.value)
+#s2_match_test$sensor.value <- as.numeric(s2_match_test$sensor.value)
 
 
 
 #Transforma duas vari?veis em Functional Data
-x.v2.fdata <- fdata(s2_match_train$sensor.value)
-x.v3.fdata <- fdata(s2_match_train$channel)
+x.v2.fdata <- fdata(X1_train)
+x.v3.fdata <- fdata(X2_train)
 
 
-s2_match_train$subject.identifier <-ifelse(s2_match_train$subject.identifier=="a",1,0)
-s2_match_test$subject.identifier <-ifelse(s2_match_test$subject.identifier=="a",1,0)
 
-y_train <- rep(ifelse(s2_match_train$subject.identifier == 'a', 1, 0))
-y_test <- rep(ifelse(s2_match_test$subject.identifier == 'a', 1, 0))
+y1_train <- s2_match_train %>% filter(channel==1) %>% dplyr::select(subject.identifier)
+y2_train <- s2_match_train %>% filter(channel==63) %>% dplyr::select(subject.identifier)
+
+
+y1_train$subject.identifier <-ifelse(y1_train$subject.identifier=="a",1,0)
+#s2_match_test$subject.identifier <-ifelse(s2_match_test$subject.identifier=="a",1,0)
+
+#y_train <- rep(ifelse(s2_match_train$subject.identifier == 'a', 1, 0))
+#y_test <- rep(ifelse(s2_match_test$subject.identifier == 'a', 1, 0))
 
 
 
 #Cria as bases Spline/Fourier
-ldata.train=list("df"=as.data.frame(y_train),"x1"=x.v2.fdata,"x2" =x.v3.fdata)  
-basis.x1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:4); basis.x2=create.fdata.basis(x.v3.fdata,type.basis="bspline", l=1:4) 
+ldata.train=list("df"=as.data.frame(y1_train),"x1"=x.v2.fdata,"x2" =x.v3.fdata)  
+basis.x1=create.fdata.basis(x.v2.fdata,type.basis="bspline"); basis.x2=create.fdata.basis(x.v3.fdata,type.basis="bspline") 
 basis.b1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:4); basis.b2=create.fdata.basis(x.v3.fdata,type.basis="bspline", l=1:4)   
 basis.x=list("x1"=basis.x1, "x2"=basis.x2)                                                   
 basis.b=list("x1"=basis.b1, "x2"=basis.b2)      
