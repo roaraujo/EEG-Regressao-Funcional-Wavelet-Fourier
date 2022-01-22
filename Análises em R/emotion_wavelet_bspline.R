@@ -66,7 +66,7 @@ Y <- rep(ifelse(emotion$game_outcome == 'gain', 1, 0))#,28)
 
 data <- data.frame(Y, X)
 
-set.seed(20)
+set.seed(10)
 nrows <- nrow(data)
 index <- sample(1:nrows, 0.7 * nrows)	# shuffle and divide
 train_model <- data[index,]			       
@@ -88,14 +88,14 @@ x_train_wt[,(2)] <- x_train_melted_wt[1:128,]
 train_wt <- data.frame(train_model$Y, x_train_wt)
 
 
-############ Base de Fourier #############
+############ Base de Spline #############
 
 
 x.v2.fdata <- fdata(train_wt$V2)
 
 ldata.train=list("df"=as.data.frame(train_wt$train_model.Y),"x1"=x.v2.fdata) 
-basis.x1=create.fdata.basis(x.v2.fdata,type.basis="fourier", l=1:8)
-basis.b1=create.fdata.basis(x.v2.fdata,type.basis="fourier", l=1:8)
+basis.x1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:8)
+basis.b1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:8)
 
 
 basis.x=list("x1"=basis.x1)                                                   
@@ -104,13 +104,13 @@ basis.b=list("x1"=basis.b1)
 
 
 x.v2.fdata_v2 <- fdata(train_model$V2)
-plot(x.v2.fdata_v2, main = '')
-plot(mean(x.v2.fdata))
+plot(x.v2.fdata_v2)
+plot(mean(x.v2.fdata), main = '')
 plot(basis.x$x1)
 plot(basis.b$x1)
 
+set.seed(11)
 
-set.seed(21)
 res.basis=fregre.glm(train_wt$train_model.Y~x1,ldata.train,family=binomial,basis.x=basis.x,basis.b=basis.b) 
 summary(res.basis)
 
@@ -119,7 +119,7 @@ t_train <- table(train_wt$train_model.Y, ifelse(predict(res.basis, newx = ldata.
 t_train %>% diag() %>% sum () / t_train %>% sum()
 
 
-plot(func.mean(fdata(train_wt$V2)), main = '')
+plot(func.mean(fdata(train_wt$V2)))
 
 roc_train <- roc(response = train_wt$train_model.Y, ifelse(predict(res.basis, newx = ldata.train) < 0.5, 0, 1))
 plotaroc(roc_train, titulo = "Curva ROC")
@@ -161,7 +161,7 @@ predict_test_x$y_test <- as.factor(predict_test_x$y_test)
 
 confusionMatrix(predict_test_x$predict, predict_test_x$y_test)
 
-plot(func.mean(fdata(test_model$V2)), main = '')
+plot(func.mean(fdata(test_model$V2)))
 
 
 
@@ -269,10 +269,3 @@ plot(x = ef$frequency, y = ef$strength, t = "b",
 # compare to data generating parameters
 cbind(amp, ef$strength[ef$strength > 0.25])
 cbind(phs - pi/2, ef$phase[ef$strength > 0.25])
-
-
-
-
-
-
-

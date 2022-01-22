@@ -133,16 +133,17 @@ x.v7.fdata <- fdata(x_train_wt$V7)
 
 
 
+
 #Cria as bases Spline/Fourier
 ldata.train=list("df"=as.data.frame(y_train),"x1"=x.v2.fdata,"x2" =x.v3.fdata, "x3" =x.v4.fdata, "x4" =x.v5.fdata, "x5" =x.v6.fdata, "x5" =x.v7.fdata)  
-basis.x1=create.fdata.basis(x.v2.fdata,type.basis="fourier", l=1:4); basis.x2=create.fdata.basis(x.v3.fdata,type.basis="fourier", l=1:4) 
-basis.x3=create.fdata.basis(x.v4.fdata,type.basis="fourier", l=1:4); basis.x4=create.fdata.basis(x.v5.fdata,type.basis="fourier", l=1:4) 
-basis.x5=create.fdata.basis(x.v6.fdata,type.basis="fourier", l=1:4); basis.x6=create.fdata.basis(x.v7.fdata,type.basis="fourier", l=1:4) 
+basis.x1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:4); basis.x2=create.fdata.basis(x.v3.fdata,type.basis="bspline", l=1:4) 
+basis.x3=create.fdata.basis(x.v4.fdata,type.basis="bspline", l=1:4); basis.x4=create.fdata.basis(x.v5.fdata,type.basis="bspline", l=1:4) 
+basis.x5=create.fdata.basis(x.v6.fdata,type.basis="bspline", l=1:4); basis.x6=create.fdata.basis(x.v7.fdata,type.basis="bspline", l=1:4) 
 
 #basis.b1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:4); basis.b2=create.fdata.basis(x.v3.fdata,type.basis="bspline", l=1:4)   
-basis.b1=create.fdata.basis(x.v2.fdata,type.basis="fourier", l=1:4); basis.b2=create.fdata.basis(x.v3.fdata,type.basis="fourier", l=1:4)
-basis.b3=create.fdata.basis(x.v4.fdata,type.basis="fourier", l=1:4); basis.b4=create.fdata.basis(x.v5.fdata,type.basis="fourier", l=1:4)
-basis.b5=create.fdata.basis(x.v6.fdata,type.basis="fourier", l=1:4); basis.b6=create.fdata.basis(x.v7.fdata,type.basis="fourier", l=1:4)
+basis.b1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:4); basis.b2=create.fdata.basis(x.v3.fdata,type.basis="bspline", l=1:4)
+basis.b3=create.fdata.basis(x.v4.fdata,type.basis="bspline", l=1:4); basis.b4=create.fdata.basis(x.v5.fdata,type.basis="bspline", l=1:4)
+basis.b5=create.fdata.basis(x.v6.fdata,type.basis="bspline", l=1:4); basis.b6=create.fdata.basis(x.v7.fdata,type.basis="bspline", l=1:4)
 
 
 basis.x=list("x1"=basis.x1, "x2"=basis.x2, "x3"=basis.x3, "x4"=basis.x4, "x5"=basis.x5, "x6"=basis.x6)                                                   
@@ -163,23 +164,11 @@ roc_train <- roc(response = y_train, ifelse(predict(res.basis, newx = ldata.trai
 plotaroc(roc_train, titulo = "Curva ROC")
 
 
-plot(x.v2.fdata, main = '')
-plot(mean(x.v2.fdata), main = '')
+plot(x.v2.fdata)
+plot(mean(x.v2.fdata))
 
-plot(x.v3.fdata, main = '')
-plot(mean(x.v3.fdata), main = '')
-
-plot(x.v4.fdata, main = '')
-plot(mean(x.v4.fdata), main = '')
-
-plot(x.v5.fdata, main = '')
-plot(mean(x.v5.fdata), main = '')
-
-plot(x.v6.fdata, main = '')
-plot(mean(x.v6.fdata), main = '')
-
-plot(x.v7.fdata, main = '')
-plot(mean(x.v7.fdata), main = '')
+plot(x.v3.fdata)
+plot(mean(x.v3.fdata))
 
 ############ Base de teste #################
 
@@ -249,22 +238,6 @@ x.v5.fdata_test <- fdata(x_test$V5)
 x.v6.fdata_test <- fdata(x_test$V6)
 x.v7.fdata_test <- fdata(x_test$V7)
 
-
-
-plot(mean(x.v2.fdata_test), main = '')
-
-plot(mean(x.v3.fdata_test), main = '')
-
-plot(mean(x.v4.fdata_test), main = '')
-
-plot(mean(x.v5.fdata_test), main = '')
-
-plot(mean(x.v6.fdata_test), main = '')
-
-plot(mean(x.v7.fdata_test), main = '')
-
-
-
 #Avalia performance (acuracia) nas bases de treino e teste
 ldata.test=list("df"=as.data.frame(y_test),"x1"=x.v2.fdata_test,"x2" =x.v3.fdata_test, "x3" =x.v4.fdata_test, "x4" =x.v5.fdata_test, "x5" =x.v6.fdata_test, "x6" =x.v7.fdata_test) 
 
@@ -282,3 +255,4 @@ predict_test_x$predict <- as.factor(predict_test_x$predict)
 predict_test_x$y_test <- as.factor(predict_test_x$y_test)
 
 confusionMatrix(predict_test_x$predict, predict_test_x$y_test)
+

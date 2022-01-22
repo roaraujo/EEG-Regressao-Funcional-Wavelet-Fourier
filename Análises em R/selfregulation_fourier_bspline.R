@@ -66,83 +66,72 @@ y_test <- rep(ifelse(y_test_py == 'positivity', 1, 0))#,28)
 
 
 
-### Transformada de Wavelet
+######### Transformada de Fourier
+
 # CANAL 1
-train_wt1 <- dwt(x_train$V2, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_train_melted_wt1 <- as.array(train_wt1@series)
-
-dim(x_train_melted_wt1) <- c(268, 896)
+train_fft_1 <- fft(x_train$V2) 
+train_fft_1 <- as.numeric(train_fft_1)
+dim(train_fft_1) <- c(268, 896)
 
 # CANAL 2
-train_wt2 <- dwt(x_train$V3, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_train_melted_wt2 <- as.array(train_wt2@series)
-
-dim(x_train_melted_wt2) <- c(268, 896)
+train_fft_2 <- fft(x_train$V3) 
+train_fft_2 <- as.numeric(train_fft_2)
+dim(train_fft_2) <- c(268, 896)
 
 # CANAL 3
-train_wt3 <- dwt(x_train$V4, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_train_melted_wt3 <- as.array(train_wt3@series)
-
-dim(x_train_melted_wt3) <- c(268, 896)
+train_fft_3 <- fft(x_train$V4) 
+train_fft_3 <- as.numeric(train_fft_3)
+dim(train_fft_3) <- c(268, 896)
 
 # CANAL 4
-train_wt4 <- dwt(x_train$V5, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_train_melted_wt4 <- as.array(train_wt4@series)
-
-dim(x_train_melted_wt4) <- c(268, 896)
+train_fft_4 <- fft(x_train$V5) 
+train_fft_4 <- as.numeric(train_fft_4)
+dim(train_fft_4) <- c(268, 896)
 
 # CANAL 5
-train_wt5 <- dwt(x_train$V6, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_train_melted_wt5 <- as.array(train_wt5@series)
-
-dim(x_train_melted_wt5) <- c(268, 896)
+train_fft_5 <- fft(x_train$V6) 
+train_fft_5 <- as.numeric(train_fft_5)
+dim(train_fft_5) <- c(268, 896)
 
 # CANAL 6
-train_wt6 <- dwt(x_train$V7, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_train_melted_wt6 <- as.array(train_wt6@series)
-
-dim(x_train_melted_wt6) <- c(268, 896)
+train_fft_6 <- fft(x_train$V6) 
+train_fft_6 <- as.numeric(train_fft_6)
+dim(train_fft_6) <- c(268, 896)
 
 
+x_train_fft <- data.frame(id = 1:268)
 
-x_train_wt <- data.frame(id = 1:268)
+x_train_fft[,(2)] <- train_fft_1[(1):(268),]
+x_train_fft[,(3)] <- train_fft_2[(1):(268),]
+x_train_fft[,(4)] <- train_fft_3[(1):(268),]
+x_train_fft[,(5)] <- train_fft_4[(1):(268),]
+x_train_fft[,(6)] <- train_fft_5[(1):(268),]
+x_train_fft[,(7)] <- train_fft_6[(1):(268),]
 
-x_train_wt[,(2)] <- x_train_melted_wt1[1:268,]
-x_train_wt[,(3)] <- x_train_melted_wt2[1:268,]
-x_train_wt[,(4)] <- x_train_melted_wt3[1:268,]
-x_train_wt[,(5)] <- x_train_melted_wt4[1:268,]
-x_train_wt[,(6)] <- x_train_melted_wt5[1:268,]
-x_train_wt[,(7)] <- x_train_melted_wt6[1:268,]
-#train_wt <- data.frame(train_model$Y, x_train_wt)
 
 ################### FDA
 
 #Transforma duas vari?veis em Functional Data
-x.v2.fdata <- fdata(x_train_wt$V2)
-x.v3.fdata <- fdata(x_train_wt$V3)
-x.v4.fdata <- fdata(x_train_wt$V4)
-x.v5.fdata <- fdata(x_train_wt$V5)
-x.v6.fdata <- fdata(x_train_wt$V6)
-x.v7.fdata <- fdata(x_train_wt$V7)
+x.v2.fdata <- fdata(x_train_fft$V2)
+x.v3.fdata <- fdata(x_train_fft$V3)
+x.v4.fdata <- fdata(x_train_fft$V4)
+x.v5.fdata <- fdata(x_train_fft$V5)
+x.v6.fdata <- fdata(x_train_fft$V6)
+x.v7.fdata <- fdata(x_train_fft$V7)
+
 
 
 
 #Cria as bases Spline/Fourier
 ldata.train=list("df"=as.data.frame(y_train),"x1"=x.v2.fdata,"x2" =x.v3.fdata, "x3" =x.v4.fdata, "x4" =x.v5.fdata, "x5" =x.v6.fdata, "x5" =x.v7.fdata)  
-basis.x1=create.fdata.basis(x.v2.fdata,type.basis="fourier", l=1:4); basis.x2=create.fdata.basis(x.v3.fdata,type.basis="fourier", l=1:4) 
-basis.x3=create.fdata.basis(x.v4.fdata,type.basis="fourier", l=1:4); basis.x4=create.fdata.basis(x.v5.fdata,type.basis="fourier", l=1:4) 
-basis.x5=create.fdata.basis(x.v6.fdata,type.basis="fourier", l=1:4); basis.x6=create.fdata.basis(x.v7.fdata,type.basis="fourier", l=1:4) 
+basis.x1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:8); basis.x2=create.fdata.basis(x.v3.fdata,type.basis="bspline", l=1:8) 
+basis.x3=create.fdata.basis(x.v4.fdata,type.basis="bspline", l=1:8); basis.x4=create.fdata.basis(x.v5.fdata,type.basis="bspline", l=1:8) 
+basis.x5=create.fdata.basis(x.v6.fdata,type.basis="bspline", l=1:8); basis.x6=create.fdata.basis(x.v7.fdata,type.basis="bspline", l=1:8) 
 
 #basis.b1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:4); basis.b2=create.fdata.basis(x.v3.fdata,type.basis="bspline", l=1:4)   
-basis.b1=create.fdata.basis(x.v2.fdata,type.basis="fourier", l=1:4); basis.b2=create.fdata.basis(x.v3.fdata,type.basis="fourier", l=1:4)
-basis.b3=create.fdata.basis(x.v4.fdata,type.basis="fourier", l=1:4); basis.b4=create.fdata.basis(x.v5.fdata,type.basis="fourier", l=1:4)
-basis.b5=create.fdata.basis(x.v6.fdata,type.basis="fourier", l=1:4); basis.b6=create.fdata.basis(x.v7.fdata,type.basis="fourier", l=1:4)
+basis.b1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:8); basis.b2=create.fdata.basis(x.v3.fdata,type.basis="bspline", l=1:8)
+basis.b3=create.fdata.basis(x.v4.fdata,type.basis="bspline", l=1:8); basis.b4=create.fdata.basis(x.v5.fdata,type.basis="bspline", l=1:8)
+basis.b5=create.fdata.basis(x.v6.fdata,type.basis="bspline", l=1:8); basis.b6=create.fdata.basis(x.v7.fdata,type.basis="bspline", l=1:8)
 
 
 basis.x=list("x1"=basis.x1, "x2"=basis.x2, "x3"=basis.x3, "x4"=basis.x4, "x5"=basis.x5, "x6"=basis.x6)                                                   
@@ -156,7 +145,6 @@ summary(res.basis)
 table(y_train, ifelse(predict(res.basis, newx = ldata.train) < 0.5, 0, 1)) #equivalente: table(y_train, ifelse(fitted(res.basis) < 0.5, 0, 1))
 t_train <- table(y_train, ifelse(predict(res.basis, newx = ldata.train) < 0.5, 0, 1))
 t_train %>% diag() %>% sum () / t_train %>% sum()
-
 
 
 roc_train <- roc(response = y_train, ifelse(predict(res.basis, newx = ldata.train) < 0.5, 0, 1))
@@ -182,72 +170,58 @@ plot(x.v7.fdata, main = '')
 plot(mean(x.v7.fdata), main = '')
 
 ############ Base de teste #################
+######### Transformada de Fourier
 
-
-
-
-### Transformada de Wavelet
 # CANAL 1
-test_wt1 <- dwt(x_test$V2, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_test_melted_wt1 <- as.array(test_wt1@series)
-
-dim(x_test_melted_wt1) <- c(293, 896)
+test_fft_1 <- fft(x_test$V2) 
+test_fft_1 <- as.numeric(test_fft_1)
+dim(test_fft_1) <- c(293, 896)
 
 # CANAL 2
-test_wt2 <- dwt(x_test$V3, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_test_melted_wt2 <- as.array(test_wt2@series)
-
-dim(x_test_melted_wt2) <- c(293, 896)
+test_fft_2 <- fft(x_test$V3) 
+test_fft_2 <- as.numeric(test_fft_2)
+dim(test_fft_2) <- c(293, 896)
 
 # CANAL 3
-test_wt3 <- dwt(x_test$V4, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_test_melted_wt3 <- as.array(test_wt3@series)
-
-dim(x_test_melted_wt3) <- c(293, 896)
+test_fft_3 <- fft(x_test$V4) 
+test_fft_3 <- as.numeric(test_fft_3)
+dim(test_fft_3) <- c(293, 896)
 
 # CANAL 4
-test_wt4 <- dwt(x_test$V5, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_test_melted_wt4 <- as.array(test_wt4@series)
-
-dim(x_test_melted_wt4) <- c(293, 896)
+test_fft_4 <- fft(x_test$V5) 
+test_fft_4 <- as.numeric(test_fft_4)
+dim(test_fft_4) <- c(293, 896)
 
 # CANAL 5
-test_wt5 <- dwt(x_test$V6, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_test_melted_wt5 <- as.array(test_wt5@series)
-
-dim(x_test_melted_wt5) <- c(293, 896)
+test_fft_5 <- fft(x_test$V6) 
+test_fft_5 <- as.numeric(test_fft_5)
+dim(test_fft_5) <- c(293, 896)
 
 # CANAL 6
-test_wt6 <- dwt(x_test$V7, filter="la8", boundary="periodic", fast=TRUE) # Transformada de Wavalet
-
-x_test_melted_wt6 <- as.array(test_wt6@series)
-
-dim(x_test_melted_wt6) <- c(293, 896)
+test_fft_6 <- fft(x_test$V6) 
+test_fft_6 <- as.numeric(test_fft_6)
+dim(test_fft_6) <- c(293, 896)
 
 
+x_test_fft <- data.frame(id = 1:293)
 
-x_test_wt <- data.frame(id = 1:293)
-
-x_test_wt[,(2)] <- x_test_melted_wt1[1:293,]
-x_test_wt[,(3)] <- x_test_melted_wt2[1:293,]
-x_test_wt[,(4)] <- x_test_melted_wt3[1:293,]
-x_test_wt[,(5)] <- x_test_melted_wt4[1:293,]
-x_test_wt[,(6)] <- x_test_melted_wt5[1:293,]
-x_test_wt[,(7)] <- x_test_melted_wt6[1:293,]
-
+x_test_fft[,(2)] <- test_fft_1[(1):(293),]
+x_test_fft[,(3)] <- test_fft_2[(1):(293),]
+x_test_fft[,(4)] <- test_fft_3[(1):(293),]
+x_test_fft[,(5)] <- test_fft_4[(1):(293),]
+x_test_fft[,(6)] <- test_fft_5[(1):(293),]
+x_test_fft[,(7)] <- test_fft_6[(1):(293),]
 
 
-x.v2.fdata_test <- fdata(x_test$V2)
-x.v3.fdata_test <- fdata(x_test$V3)
-x.v4.fdata_test <- fdata(x_test$V4)
-x.v5.fdata_test <- fdata(x_test$V5)
-x.v6.fdata_test <- fdata(x_test$V6)
-x.v7.fdata_test <- fdata(x_test$V7)
+################### FDA
+
+#Transforma duas vari?veis em Functional Data
+x.v2.fdata_test <- fdata(x_test_fft$V2)
+x.v3.fdata_test <- fdata(x_test_fft$V3)
+x.v4.fdata_test <- fdata(x_test_fft$V4)
+x.v5.fdata_test <- fdata(x_test_fft$V5)
+x.v6.fdata_test <- fdata(x_test_fft$V6)
+x.v7.fdata_test <- fdata(x_test_fft$V7)
 
 
 

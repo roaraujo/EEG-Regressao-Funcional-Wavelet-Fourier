@@ -86,13 +86,13 @@ x_train_fft[,(2)] <- train_fft[(1):(128),]
 
 train_fft_dt <- data.frame(train_model$Y, x_train_fft)
 
-############ Base de Spline #############
+############ Base de Fourier #############
 
 x.v2.fdata <- fdata(train_fft_dt$V2)
 
 ldata.train=list("df"=as.data.frame(train_fft_dt$train_model.Y),"x1"=x.v2.fdata) 
-basis.x1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:4)
-basis.b1=create.fdata.basis(x.v2.fdata,type.basis="bspline", l=1:4)
+basis.x1=create.fdata.basis(x.v2.fdata,type.basis="fourier", l=1:4)
+basis.b1=create.fdata.basis(x.v2.fdata,type.basis="fourier", l=1:4)
 
 
 basis.x=list("x1"=basis.x1)                                                   
@@ -100,12 +100,12 @@ basis.b=list("x1"=basis.b1)
 
 
 
-plot(x.v2.fdata)
-plot(mean(x.v2.fdata))
+plot(x.v2.fdata, main = '')
+plot(mean(x.v2.fdata), main = '')
 plot(basis.x$x1)
 plot(basis.b$x1)
 
-set.seed(12)
+set.seed(14)
 res.basis=fregre.glm(train_fft_dt$train_model.Y ~ x1,ldata.train,family=binomial,basis.x=basis.x,basis.b=basis.b) 
 summary(res.basis)
 
@@ -142,6 +142,13 @@ test_fft_dt <- data.frame(test_model$Y, x_test_fft)
 
 x.v2.fdata_test <- fdata(test_fft_dt$V2)
 
+
+
+plot(x.v2.fdata_test, main = '')
+plot(mean(x.v2.fdata_test), main = '')
+
+
+
 ldata.test=list("df"=as.data.frame(test_fft_dt$test_model.Y),"x1"=x.v2.fdata_test) 
 
 t_test <- table(test_fft_dt$test_model.Y, ifelse(predict(res.basis, newx = ldata.test) < 0.5, 0, 1))
@@ -157,5 +164,3 @@ predict_test_x$y_test <- as.factor(predict_test_x$y_test)
 confusionMatrix(predict_test_x$predict, predict_test_x$y_test)
 
 plot(func.mean(fdata(test_fft_dt$V2)))
-
-
